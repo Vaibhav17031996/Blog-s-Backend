@@ -35,12 +35,16 @@ const blogSchema = new mongoose.Schema(
       type: String,
     },
 
-    upvote: {
+    upVote: {
       type: Number,
+      default: 0,
+      required: true,
     },
 
-    downvote: {
+    downVote: {
       type: Number,
+      default: 0,
+      required: true,
     },
 
     votedBy: {

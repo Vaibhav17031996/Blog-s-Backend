@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 function connectMongo() {
   mongoose
-    .connect("mongodb://localhost/prod1")
+    .connect("mongodb://localhost/blog_local")
     .then((mongooseInstance) => {
-      console.log("prod1 db succesfully connected");
+      console.log("blog local db succesfully connected");
       // console.log(mongooseInstance);
     })
     .catch((err) => {
       console.log("error connecting the database", err);
-      process.exit(1); //this exit takes in the parameter called as 'code'-> 2 major codes -> 0 & 1(mostly used) -> this "process" is the part of Node, not of the dotenv
+      // process.exit(1); //this exit takes in the parameter called as 'code'-> 2 major codes -> 0 & 1(mostly used) -> this "process" is the part of Node, not of the dotenv
       // 1 means -> we are intentionaly exiting our node / we are intentionaly terminating our node due to some major failure or error
     });
 }
