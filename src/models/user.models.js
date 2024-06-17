@@ -31,10 +31,10 @@ const userSchema = new mongoose.Schema({
   resetPasswordToken: {
     type: String,
   },
-  
+
   resetPasswordExpire: {
     type: String,
   },
 });
 
-module.exports = mongoose.model("Tag", userSchema);
+module.exports = mongoose.model("User", userSchema);
