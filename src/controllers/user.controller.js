@@ -1,6 +1,7 @@
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
 const User = require("../models/user.models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const saltRounds = 10;
 
 async function signup(req, res) {
   const { userName, password, email } = req.body;
@@ -19,7 +20,7 @@ async function signup(req, res) {
       $or: [{ userName }, { email }],
     });
     if (isUserPresent) {
-      res.status(400).json({
+      return res.status(400).json({
         status: false,
         message: "User already exists",
         error: "User already exists",
@@ -33,14 +34,14 @@ async function signup(req, res) {
       password: cryptedPassword,
       email,
     });
-    res.status(200).json({
+    return res.status(200).json({
       status: true,
       message: "User signedup successfully",
       data: newUser,
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
+    return res.status(500).json({
       status: false,
       message: "User could not be created, please try again",
       error: err.message,
@@ -49,7 +50,48 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
-  res.send("login working");
+  const { userName, email, password } = req.body;
+  try {
+    const user = await User.findOne({
+      $or: [{ userName }, { email }],
+    });
+    if (!user) {
+      return res.status(400).json({
+        status: false,
+        message: "User not found",
+        error: "Email password combination is not correct",
+      });
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({
+        status: false,
+        message: "Incorrect password",
+        error: "Email password combination is not correct",
+      });
+    }
+    const authorizationToken = await jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        username: user.userName,
+      },
+      process.env.JWT_SECRET
+    );
+    return res.status(200).json({
+      status: true,
+      message: "User login successful",
+      token: authorizationToken,
+      data: user,
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({
+      status: false,
+      message: "User login failed, please try again",
+      error: err.message,
+    });
+  }
 }
 
 async function getUserDetails(req, res) {
