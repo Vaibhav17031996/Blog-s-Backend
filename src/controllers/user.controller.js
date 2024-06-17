@@ -95,7 +95,45 @@ async function login(req, res) {
 }
 
 async function getUserDetails(req, res) {
-  res.send("user Details set");
+  const id = req.params.userId;
+  try {
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(400).json({
+        status: false,
+        message: "No user found with the user id",
+        error: "User not found",
+      });
+    }
+    return res.status(200).json({
+      status: true,
+      message: "User details fetched successfully",
+      data: user,
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({
+      status: false,
+      message: "Could not fetch user details",
+      error: err.message,
+    });
+  }
+  /* 
+  (My Approach: Review it by yourself)
+    if (!id) {
+        return res.status(400).json({
+        status: false,
+        message: "User not found",
+        error: "Use id doesn't exist",
+        });
+    }
+    const user = await User.findOne({ id });
+    return res.status(200).json({
+        status: true,
+        message: "User found",
+        data: user,
+    }); 
+  */
 }
 
 module.exports = { signup, login, getUserDetails };
