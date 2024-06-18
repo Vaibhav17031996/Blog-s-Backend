@@ -67,11 +67,58 @@ async function createBlog(req, res) {
 async function updateBlog(req, res) {
   const { title, description, tag, imageURL } = req.body;
   const oldTags = req.blog.tag;
-  // update the blog with the new data
-  // get the newly created blog
-  // compare old & new tags to find delta
-  // remove the blogId from deleted tags
-  // add the blogId on the newly added tags
+  const blogId = req.blog._id;
+  /* 
+    update the blog with the new data
+    get the newly created blog
+    compare old & new tags to find delta
+    remove the blogId from deleted tags
+    add the blogId on the newly added tags 
+  */
+  try {
+    // 1. update the blog with the new data
+    await Blog.findByIdAndUpdate(blogId, {
+      title,
+      description,
+      tag,
+      imageURL,
+    });
+    // 2. Iterating over old tags
+    oldTags.forEach(async (tagEntry) => {
+      const tagDocument = await Tag.findOne({ categoryName: tagEntry });
+      if (tagDocument) {
+        tagDocument.category.pull(blogId);
+        await tagDocument.save();
+      }
+    });
+    tag.forEach(async (tagEntry) => {
+      const tagDocument = await Tag.findOne({ categoryName: tagEntry });
+      if (tagDocument) {
+        tagDocument.category.push(blogId);
+        await tagDocument.save();
+      } else {
+        const newTag = await Tag.create({
+          categoryName: tagEntry,
+          category: [blogId],
+        });
+      }
+    });
+    return res.status(200).json({
+      status: true,
+      message: "Blog updated successfully",
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({
+      status: false,
+      message: "Could not create the blog",
+      error: err.message,
+    });
+  }
 }
 
-module.exports = { createBlog, updateBlog };
+async function deleteBlog(req, res) {
+  res.send("working");
+}
+
+module.exports = { createBlog, updateBlog, deleteBlog };
