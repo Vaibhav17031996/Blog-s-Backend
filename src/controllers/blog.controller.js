@@ -64,4 +64,15 @@ async function createBlog(req, res) {
   }
 }
 
-module.exports = { createBlog };
+async function updateBlog(req, res) {
+  const { title, description, tag, imageURL } = req.body;
+  const oldTags = req.blog.tag;
+  // update the blog with the new data
+  // get the newly created blog
+  // compare old & new tags to find delta
+  // remove the blogId from deleted tags
+  // add the blogId on the newly added tags
+  if(title)
+}
+
+module.exports = { createBlog, updateBlog };

@@ -11,13 +11,13 @@ async function verifyAndFetchUser(req, res, next) {
     const userData = await jwt.verify(token, process.env.JWT_SECRET);
     console.log(userData);
     req.user = userData;
+    next();
   } catch (err) {
     return res.status(401).json({
       status: false,
       message: "User authorization failed",
     });
   }
-  next();
 }
 
 module.exports = { verifyAndFetchUser };
