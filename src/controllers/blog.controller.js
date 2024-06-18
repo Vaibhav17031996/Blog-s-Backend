@@ -72,7 +72,6 @@ async function updateBlog(req, res) {
   // compare old & new tags to find delta
   // remove the blogId from deleted tags
   // add the blogId on the newly added tags
-  if(title)
 }
 
 module.exports = { createBlog, updateBlog };
