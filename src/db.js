@@ -15,7 +15,7 @@ function connectMongo() {
 }
 module.exports = connectMongo;
 
-/* after the mogno code has landed in catch what will happen to the node server 
+/* after the mongo code has landed in catch what will happen to the node server 
     options are =>
     1) it will continue working
     2) it will stop working 
@@ -27,7 +27,7 @@ module.exports = connectMongo;
     Why => so that website chalti rahe agar dataserver crash ho jaye bhi to. ->
     That means if a query did not work, in that situation my server should be up and running. It should not block our other users. But at that point Node server is totally irrelevant. Because nowadays everything runs on database. 
 
-    So how to stop the node? => Using process (Check line 12)
+    So how to stop the node? => Using process (Check line 12) => process.exit(1);
 
     1000 users -> other users 
         1001 -> signup -> it failed -> 

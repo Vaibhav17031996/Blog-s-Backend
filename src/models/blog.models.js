@@ -28,7 +28,6 @@ const blogSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      // ref: userSchema,
     },
 
     userName: {
@@ -57,7 +56,7 @@ const blogSchema = new mongoose.Schema(
     // },
 
     comments: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
     },
   },

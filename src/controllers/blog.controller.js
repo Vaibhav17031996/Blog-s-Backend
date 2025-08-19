@@ -164,12 +164,12 @@ async function likeOrUpdateBlog(req, res) {
     }
 
     if (req.params.liking) {
-      blog.upVote = blog.upvote + 1;
+      blog.upVote = blog.upVote + 1;
       blog.votedBy = [];
       blog.votedBy = blog.votedBy.push(userId);
       await blog.save();
     } else {
-      blog.downVote = blog.downvote + 1;
+      blog.downVote = blog.downVote + 1;
       blog.votedBy = [];
       blog.votedBy = blog.votedBy.push(userId);
       await blog.save();

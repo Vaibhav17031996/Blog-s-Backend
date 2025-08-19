@@ -20,14 +20,17 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
 
-    //   later: [{
-    blog: [
-      {
-        //   type: mongoose.Schema.Types.ObjectId,
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Blog",
-      },
-    ],
+    blog: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Blog",
+    },
+    // We can write it like this as well: [{...}]
+    // blog: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Blog",
+    //   },
+    // ],
 
     resetPasswordToken: {
       type: String,
