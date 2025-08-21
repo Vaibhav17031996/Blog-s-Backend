@@ -18,7 +18,7 @@ async function signup(req, res) {
     */
     const isUserPresent = await User.findOne({
       $or: [{ userName }, { email }],
-    });
+    }); // This is by using mongo queries
     if (isUserPresent) {
       return res.status(400).json({
         status: false,

@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 function connectMongo() {
+  // We wrap our database connection code inside this function so that:
+  // 1. It can be reused in multiple places.
+  // 2. Keeps code modular and clean.
+  // 3. Can be imported and executed when needed.
   mongoose
     .connect("mongodb://localhost/blog_local")
     .then((mongooseInstance) => {
@@ -9,8 +13,8 @@ function connectMongo() {
     })
     .catch((err) => {
       console.log("error connecting the database", err);
-      // process.exit(1); //this exit takes in the parameter called as 'code'-> 2 major codes -> 0 & 1(mostly used) -> this "process" is the part of Node, not of the dotenv
-      // 1 means -> we are intentionaly exiting our node / we are intentionaly terminating our node due to some major failure or error
+      // process.exit(1); //this exit takes in the parameter called as 'code'. 2 major codes are there: 0 & 1(mostly used) -> this "process" is the part of Node, not of the dotenv
+      // 1 means -> we are intentionaly exiting our node / we are intentionaly terminating our node due to some major failure or error. 0 means successful exit.
     });
 }
 module.exports = connectMongo;
