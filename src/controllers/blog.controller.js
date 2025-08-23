@@ -5,7 +5,7 @@ const Tag = require("../models/tag.models");
 async function createBlog(req, res) {
   const userId = req.user._id;
   const { title, description, tag, imageURL } = req.body;
-  const documentObject = {};
+  const documentObject = {}; // Why documentObject? => In mongoose, row is called "document" & we are creating an object out of the fields that we are dealing with.
   if (tag) documentObject.tag = tag;
   if (imageURL) documentObject.imageURL = imageURL;
 
@@ -30,28 +30,48 @@ async function createBlog(req, res) {
       upVote: 0,
       downVote: 0,
       comments: [],
-      // Why we are not adding tag & image here? -> bcz tag & image are not required at the time of creating the blog. That's the reason we've written the extra code (line 8-9 -> if (tag) documentObject.tag = tag; if (imageURL) documentObject.imageURL = imageURL;)
+      // Why we are not adding tag & image here? -> bcz tag & image are not required at the time of creating the blog. That's the reason we've written the extra code (line 9-10 -> if (tag) documentObject.tag = tag; if (imageURL) documentObject.imageURL = imageURL;)
     });
     // => Iterating over tags
     // 3. check if the tags are present in the DB
     // 4. if they are present, append the blogId
     // 5. if they are not present, create them and then append the blogId
     if (tag?.length > 0) {
-      tag.forEach(async (tagValue) => {
-        const existingTag = await Tag.findOne({ categoryName: tagValue });
+      for (const tagValue of tag) {
+        let existingTag = await Tag.findOne({ categoryName: tagValue });
+
         if (existingTag) {
+          // If tag exists, just update it
           existingTag.category.push(newBlogPost._id);
           await existingTag.save();
+        } else {
+          // Only create new tag if not found
+          await Tag.create({
+            categoryName: tagValue,
+            category: [newBlogPost._id],
+          });
         }
-        const newTag = await Tag.create({
-          categoryName: tagValue,
-          category: [newBlogPost._id],
-        });
-      });
+      }
     }
+
+    // Below code is the alternate of the above one, but there are few issues. Code's logic is right, but the async pattern is not. Array.forEach doesn’t await your async callbacks, so your route may finish before tags are saved, and errors can be swallowed.
+    // if (tag?.length > 0) {
+    //   tag.forEach(async (tagValue) => {
+    //     const existingTag = await Tag.findOne({ categoryName: tagValue });
+    //     if (existingTag) {
+    //       existingTag.category.push(newBlogPost._id);
+    //       await existingTag.save();
+    //     } else {
+    //       const newTag = await Tag.create({
+    //         categoryName: tagValue,
+    //         category: [newBlogPost._id],
+    //       });
+    //     }
+    //   });
+    // }
     return res.status(200).json({
       status: true,
-      message: "Blog successful created",
+      message: "Blog successfully created",
       data: newBlogPost,
     });
   } catch (err) {
@@ -71,7 +91,7 @@ async function updateBlog(req, res) {
   /* 
     update the blog with the new data
     get the newly created blog
-    compare old & new tags to find delta
+    compare old & new tags to find delta (difference)
     remove the blogId from deleted tags
     add the blogId on the newly added tags 
   */
@@ -122,7 +142,7 @@ async function deleteBlog(req, res) {
   // remove the tags associated with the blogId
   const blogId = req.blog._id;
   try {
-    const deletedBlog = await Blog.findByIdAndUpdate(blogId);
+    const deletedBlog = await Blog.findByIdAndDelete(blogId);
     deletedBlog.tag.forEach(async (tagEntry) => {
       const tagDocument = await Tag.findOne({ categoryName: tagEntry });
       if (tagDocument) {
